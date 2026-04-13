@@ -1,0 +1,2790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Amphosis Ink Solutions — Precision CIJ Ink & Coding Systems</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Outfit:wght@300;400;500;600&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+  <style>
+    /* ============================================================
+       CSS RESET & ROOT VARIABLES
+    ============================================================ */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg-void:       #03060f;
+      --bg-deep:       #060d1e;
+      --bg-surface:    #0a1628;
+      --bg-card:       #0d1f3c;
+      --bg-glass:      rgba(10, 22, 40, 0.7);
+
+      --primary:       #00c8ff;
+      --primary-dim:   rgba(0, 200, 255, 0.18);
+      --primary-glow:  rgba(0, 200, 255, 0.55);
+      --accent:        #0066ff;
+      --accent-dim:    rgba(0, 102, 255, 0.2);
+      --accent2:       #00ffcc;
+      --accent2-dim:   rgba(0, 255, 204, 0.15);
+      --white:         #f0f6ff;
+      --muted:         #4a6080;
+      --text-body:     #a0bacf;
+
+      --border:        rgba(0, 200, 255, 0.15);
+      --border-bright: rgba(0, 200, 255, 0.4);
+
+      --font-display:  'Orbitron', sans-serif;
+      --font-body:     'Outfit', sans-serif;
+      --font-mono:     'DM Mono', monospace;
+
+      --radius-sm:     6px;
+      --radius-md:     12px;
+      --radius-lg:     20px;
+
+      --transition:    all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-fast: all 0.18s ease;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--bg-void);
+      color: var(--white);
+      overflow-x: hidden;
+      cursor: none;
+      scrollbar-width: thin;
+      scrollbar-color: var(--primary) var(--bg-deep);
+    }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg-deep); }
+    ::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 2px; }
+
+    /* ============================================================
+       CUSTOM CURSOR
+    ============================================================ */
+    #cursor-dot {
+      position: fixed;
+      width: 8px; height: 8px;
+      background: var(--primary);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: background 0.2s;
+      box-shadow: 0 0 12px var(--primary), 0 0 24px var(--primary-glow);
+    }
+    #cursor-ring {
+      position: fixed;
+      width: 36px; height: 36px;
+      border: 1.5px solid var(--primary);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: width 0.25s ease, height 0.25s ease, border-color 0.25s;
+      opacity: 0.7;
+    }
+    body.hovering #cursor-ring { width: 56px; height: 56px; border-color: var(--accent2); opacity: 1; }
+    body.hovering #cursor-dot  { background: var(--accent2); box-shadow: 0 0 16px var(--accent2); }
+
+    /* ============================================================
+       PROGRESS BAR
+    ============================================================ */
+    #progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--primary), var(--accent2));
+      z-index: 10000;
+      transition: width 0.1s linear;
+      box-shadow: 0 0 8px var(--primary-glow);
+    }
+
+    /* ============================================================
+       NAVIGATION
+    ============================================================ */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 1000;
+      padding: 0 5%;
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: transparent;
+      transition: var(--transition);
+    }
+    nav.scrolled {
+      background: rgba(3, 6, 15, 0.88);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+    .nav-logo-icon {
+      width: 38px; height: 38px;
+      background: linear-gradient(135deg, var(--accent), var(--primary));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-weight: 900;
+      font-size: 16px;
+      color: var(--bg-void);
+      box-shadow: 0 0 16px var(--primary-glow);
+    }
+    .nav-logo-text {
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--white);
+      line-height: 1.2;
+    }
+    .nav-logo-text span { color: var(--primary); font-size: 10px; display: block; letter-spacing: 3px; font-weight: 400; }
+
+    .nav-links {
+      display: flex;
+      list-style: none;
+      gap: 36px;
+    }
+    .nav-links a {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-body);
+      text-decoration: none;
+      transition: var(--transition-fast);
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 0;
+      width: 0; height: 1px;
+      background: var(--primary);
+      transition: width 0.3s ease;
+      box-shadow: 0 0 6px var(--primary);
+    }
+    .nav-links a:hover { color: var(--primary); }
+    .nav-links a:hover::after { width: 100%; }
+
+    .nav-cta {
+      padding: 10px 24px;
+      background: transparent;
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      text-decoration: none;
+      border-radius: var(--radius-sm);
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .nav-cta::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--primary);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s ease;
+      z-index: -1;
+    }
+    .nav-cta:hover { color: var(--bg-void); box-shadow: 0 0 20px var(--primary-glow); }
+    .nav-cta:hover::before { transform: scaleX(1); }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+    }
+    .hamburger span {
+      display: block;
+      width: 24px; height: 2px;
+      background: var(--primary);
+      transition: var(--transition);
+    }
+
+    /* ============================================================
+       HERO SECTION
+    ============================================================ */
+    #hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      padding: 120px 5% 80px;
+    }
+
+    #hero-canvas {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+
+    .hero-grid-overlay {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,200,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,200,255,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+      z-index: 1;
+      animation: gridPulse 6s ease-in-out infinite;
+    }
+    @keyframes gridPulse {
+      0%,100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+
+    .hero-radial {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 60% at 55% 50%, rgba(0, 102, 255, 0.15) 0%, transparent 70%);
+      z-index: 1;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 720px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border: 1px solid var(--primary-dim);
+      border-radius: 100px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: var(--primary);
+      margin-bottom: 28px;
+      background: rgba(0, 200, 255, 0.06);
+      animation: fadeSlideUp 0.8s ease 0.2s both;
+    }
+    .hero-badge-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--primary);
+      box-shadow: 0 0 8px var(--primary);
+      animation: blink 1.8s infinite;
+    }
+    @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.2; } }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(36px, 5.5vw, 72px);
+      font-weight: 900;
+      line-height: 1.08;
+      letter-spacing: -1px;
+      margin-bottom: 24px;
+      animation: fadeSlideUp 0.8s ease 0.4s both;
+    }
+    .hero-title .line1 { display: block; color: var(--white); }
+    .hero-title .line2 {
+      display: block;
+      background: linear-gradient(90deg, var(--primary), var(--accent2), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      background-size: 200% auto;
+      animation: fadeSlideUp 0.8s ease 0.4s both, textShimmer 4s linear 1.2s infinite;
+    }
+    @keyframes textShimmer {
+      to { background-position: 200% center; }
+    }
+
+    .hero-sub {
+      font-size: clamp(16px, 2vw, 20px);
+      color: var(--text-body);
+      font-weight: 300;
+      line-height: 1.7;
+      margin-bottom: 40px;
+      max-width: 540px;
+      animation: fadeSlideUp 0.8s ease 0.6s both;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      animation: fadeSlideUp 0.8s ease 0.8s both;
+    }
+
+    .btn-primary {
+      padding: 16px 36px;
+      background: linear-gradient(135deg, var(--accent), var(--primary));
+      color: var(--bg-void);
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 30px rgba(0,102,255,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+    }
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--primary), var(--accent2));
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 50px rgba(0,200,255,0.6), 0 12px 30px rgba(0,0,0,0.4); }
+    .btn-primary:hover::before { opacity: 1; }
+    .btn-primary span { position: relative; z-index: 1; }
+
+    .btn-secondary {
+      padding: 15px 36px;
+      background: transparent;
+      color: var(--white);
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      border: 1px solid var(--border-bright);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: var(--transition);
+      backdrop-filter: blur(10px);
+    }
+    .btn-secondary:hover {
+      background: var(--primary-dim);
+      border-color: var(--primary);
+      color: var(--primary);
+      box-shadow: 0 0 20px var(--primary-dim);
+    }
+
+    .hero-stats {
+      display: flex;
+      gap: 48px;
+      margin-top: 72px;
+      animation: fadeSlideUp 0.8s ease 1s both;
+    }
+    .hero-stat-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .hero-stat-num {
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--primary);
+      text-shadow: 0 0 20px var(--primary-glow);
+    }
+    .hero-stat-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+    .hero-stat-divider {
+      width: 1px;
+      background: var(--border);
+      align-self: stretch;
+    }
+
+    /* Floating mockup on hero right */
+    .hero-visual {
+      position: absolute;
+      right: 5%;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 2;
+      animation: fadeSlideUp 1s ease 0.6s both, float 6s ease-in-out 1.6s infinite;
+      display: none;
+    }
+    @media (min-width: 1100px) { .hero-visual { display: block; } }
+
+    @keyframes float {
+      0%,100% { transform: translateY(-50%) translateY(0px); }
+      50% { transform: translateY(-50%) translateY(-18px); }
+    }
+
+    .hero-visual-card {
+      width: 340px;
+      background: var(--bg-glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      backdrop-filter: blur(24px);
+      box-shadow: 0 0 60px rgba(0,102,255,0.2), 0 40px 80px rgba(0,0,0,0.6);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-visual-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--primary), transparent);
+    }
+    .hvc-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: var(--primary);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .hvc-title {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .hvc-sub {
+      font-size: 12px;
+      color: var(--text-body);
+      margin-bottom: 20px;
+    }
+    .hvc-bar-wrap { margin-bottom: 12px; }
+    .hvc-bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-body);
+      margin-bottom: 6px;
+      font-family: var(--font-mono);
+    }
+    .hvc-bar {
+      height: 4px;
+      background: var(--bg-surface);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .hvc-bar-fill {
+      height: 100%;
+      border-radius: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--primary));
+      box-shadow: 0 0 8px var(--primary-glow);
+      animation: barLoad 1.8s ease 1.4s both;
+      transform-origin: left;
+    }
+    @keyframes barLoad { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+    .hvc-badge-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+    .hvc-badge {
+      padding: 4px 10px;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-size: 10px;
+      font-family: var(--font-mono);
+      color: var(--primary);
+      letter-spacing: 1px;
+    }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ============================================================
+       TICKER / MARQUEE BAR
+    ============================================================ */
+    .ticker-wrap {
+      background: var(--bg-surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 0;
+      overflow: hidden;
+      position: relative;
+    }
+    .ticker-wrap::before, .ticker-wrap::after {
+      content: '';
+      position: absolute;
+      top: 0; bottom: 0;
+      width: 100px;
+      z-index: 1;
+    }
+    .ticker-wrap::before { left: 0; background: linear-gradient(90deg, var(--bg-surface), transparent); }
+    .ticker-wrap::after  { right: 0; background: linear-gradient(-90deg, var(--bg-surface), transparent); }
+    .ticker-inner {
+      display: flex;
+      gap: 0;
+      animation: ticker 28s linear infinite;
+      white-space: nowrap;
+    }
+    .ticker-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 16px;
+      padding: 0 40px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .ticker-item .dot {
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: var(--primary);
+      box-shadow: 0 0 6px var(--primary);
+      flex-shrink: 0;
+    }
+    @keyframes ticker {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    /* ============================================================
+       SECTION COMMONS
+    ============================================================ */
+    section { padding: 100px 5%; position: relative; overflow: hidden; }
+
+    .section-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 4px;
+      color: var(--primary);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-label::before {
+      content: '';
+      display: block;
+      width: 32px; height: 1px;
+      background: var(--primary);
+      box-shadow: 0 0 6px var(--primary);
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(28px, 3.5vw, 48px);
+      font-weight: 900;
+      line-height: 1.15;
+      letter-spacing: -0.5px;
+      margin-bottom: 16px;
+    }
+    .section-title .accent { color: var(--primary); }
+
+    .section-sub {
+      font-size: 17px;
+      color: var(--text-body);
+      font-weight: 300;
+      line-height: 1.7;
+      max-width: 560px;
+      margin-bottom: 64px;
+    }
+
+    /* Scroll-reveal base */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+    .reveal-delay-5 { transition-delay: 0.5s; }
+
+    /* ============================================================
+       PRODUCTS SECTION
+    ============================================================ */
+    #products { background: var(--bg-deep); }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+    }
+
+    .product-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 32px 28px;
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition);
+      cursor: pointer;
+      group: true;
+    }
+    .product-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--primary), transparent);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .product-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: var(--radius-lg);
+      background: radial-gradient(ellipse 80% 80% at 50% 0%, rgba(0,200,255,0.08) 0%, transparent 70%);
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+    .product-card:hover {
+      border-color: var(--primary-glow);
+      transform: translateY(-6px);
+      box-shadow: 0 0 40px rgba(0,200,255,0.15), 0 30px 60px rgba(0,0,0,0.4);
+    }
+    .product-card:hover::before { opacity: 1; }
+    .product-card:hover::after  { opacity: 1; }
+    .product-card:hover .product-icon { box-shadow: 0 0 30px var(--primary-glow); }
+
+    .product-icon {
+      width: 64px; height: 64px;
+      border-radius: var(--radius-md);
+      background: var(--primary-dim);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      font-size: 28px;
+      transition: var(--transition);
+      position: relative;
+      z-index: 1;
+    }
+
+    .product-tag {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--primary);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .product-name {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .product-desc {
+      font-size: 14px;
+      color: var(--text-body);
+      line-height: 1.7;
+      margin-bottom: 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .product-specs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 24px;
+      position: relative;
+      z-index: 1;
+    }
+    .product-spec {
+      padding: 4px 10px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-body);
+      letter-spacing: 1px;
+    }
+
+    .product-link {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--primary);
+      text-decoration: none;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: gap 0.2s;
+      position: relative;
+      z-index: 1;
+    }
+    .product-link:hover { gap: 14px; }
+    .product-link .arrow { transition: transform 0.2s; }
+    .product-link:hover .arrow { transform: translateX(4px); }
+
+    /* ============================================================
+       INDUSTRIES SECTION
+    ============================================================ */
+    #industries { background: var(--bg-void); }
+
+    .industries-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .industry-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .industry-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 24px 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+    .industry-item:hover {
+      border-color: var(--primary);
+      background: var(--primary-dim);
+      transform: translateY(-3px);
+      box-shadow: 0 0 24px rgba(0,200,255,0.1);
+    }
+    .industry-item:hover .industry-icon-wrap {
+      background: var(--primary);
+      box-shadow: 0 0 20px var(--primary-glow);
+    }
+    .industry-item:hover .industry-icon-wrap span { filter: invert(1); }
+
+    .industry-icon-wrap {
+      width: 44px; height: 44px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+      transition: var(--transition);
+    }
+
+    .industry-info h4 {
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .industry-info p {
+      font-size: 12px;
+      color: var(--text-body);
+      line-height: 1.5;
+    }
+
+    .industries-text .section-sub { margin-bottom: 36px; }
+
+    .feat-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .feat-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-size: 15px;
+      color: var(--text-body);
+    }
+    .feat-icon {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--primary-dim);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    /* ============================================================
+       WHY CHOOSE US
+    ============================================================ */
+    #why { background: var(--bg-surface); position: relative; }
+
+    #why::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 50% 70% at 80% 50%, rgba(0,102,255,0.08) 0%, transparent 70%);
+    }
+
+    .why-header { text-align: center; margin-bottom: 64px; }
+    .why-header .section-label { justify-content: center; }
+    .why-header .section-sub { margin: 0 auto; text-align: center; }
+
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 24px;
+    }
+
+    .why-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 36px 28px;
+      text-align: center;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .why-card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 0 40px rgba(0,200,255,0.12);
+      transform: translateY(-4px);
+    }
+    .why-card:hover .why-icon { transform: scale(1.1); }
+
+    .why-icon {
+      font-size: 42px;
+      margin-bottom: 20px;
+      display: block;
+      transition: transform 0.3s ease;
+    }
+
+    .why-title {
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+      color: var(--white);
+    }
+
+    .why-desc {
+      font-size: 14px;
+      color: var(--text-body);
+      line-height: 1.7;
+    }
+
+    .why-num {
+      position: absolute;
+      top: 20px; right: 20px;
+      font-family: var(--font-display);
+      font-size: 48px;
+      font-weight: 900;
+      color: rgba(0, 200, 255, 0.05);
+      line-height: 1;
+    }
+
+    /* ============================================================
+       SERVICES SECTION
+    ============================================================ */
+    #services { background: var(--bg-deep); }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+    }
+
+    .service-card {
+      background: var(--bg-void);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 36px 28px;
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+    .service-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--primary), var(--accent2));
+      transform: scaleX(0);
+      transition: transform 0.4s ease;
+    }
+    .service-card:hover {
+      border-color: var(--border-bright);
+      transform: translateY(-4px);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    }
+    .service-card:hover::after { transform: scaleX(1); }
+
+    .service-number {
+      font-family: var(--font-display);
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: var(--primary);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .service-number::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    .service-icon { font-size: 36px; margin-bottom: 18px; display: block; }
+
+    .service-title {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .service-desc {
+      font-size: 14px;
+      color: var(--text-body);
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    .service-features { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .service-features li {
+      font-size: 13px;
+      color: var(--text-body);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .service-features li::before {
+      content: '▸';
+      color: var(--primary);
+      font-size: 10px;
+    }
+
+    /* ============================================================
+       TECHNOLOGY SECTION
+    ============================================================ */
+    #technology {
+      background: var(--bg-void);
+      padding-bottom: 120px;
+    }
+
+    #tech-canvas {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      opacity: 0.6;
+    }
+
+    .tech-layout {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 80px;
+      align-items: center;
+    }
+
+    .tech-metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 40px;
+    }
+
+    .tech-metric {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 24px 20px;
+      transition: var(--transition);
+    }
+    .tech-metric:hover { border-color: var(--primary); box-shadow: 0 0 20px rgba(0,200,255,0.1); }
+
+    .metric-val {
+      font-family: var(--font-display);
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--primary);
+      text-shadow: 0 0 20px var(--primary-glow);
+      margin-bottom: 4px;
+    }
+    .metric-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    /* Animated tech visual */
+    .tech-visual {
+      position: relative;
+      height: 440px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tech-circle {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .tc-1 {
+      width: 300px; height: 300px;
+      border-color: rgba(0,200,255,0.2);
+      animation: rotateCw 18s linear infinite;
+    }
+    .tc-2 {
+      width: 220px; height: 220px;
+      border-color: rgba(0,102,255,0.3);
+      animation: rotateCcw 12s linear infinite;
+    }
+    .tc-3 {
+      width: 140px; height: 140px;
+      border-color: rgba(0,255,204,0.25);
+      animation: rotateCw 8s linear infinite;
+    }
+    .tc-core {
+      width: 70px; height: 70px;
+      background: linear-gradient(135deg, var(--accent), var(--primary));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      box-shadow: 0 0 40px var(--primary-glow), 0 0 80px rgba(0,102,255,0.3);
+      animation: pulse 3s ease-in-out infinite;
+      position: relative;
+      z-index: 2;
+    }
+    .tc-dot {
+      position: absolute;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--primary);
+      box-shadow: 0 0 10px var(--primary);
+    }
+    .tc-1 .tc-dot { top: 8px; left: 50%; transform: translateX(-50%); }
+    .tc-2 .tc-dot { bottom: 8px; left: 50%; transform: translateX(-50%); background: var(--accent2); box-shadow: 0 0 10px var(--accent2); }
+    .tc-3 .tc-dot { right: 8px; top: 50%; transform: translateY(-50%); background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+
+    .tech-orbit-label {
+      position: absolute;
+      font-family: var(--font-mono);
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .tol-1 { top: -28px; left: 50%; transform: translateX(-50%); color: var(--primary); }
+    .tol-2 { bottom: -28px; left: 50%; transform: translateX(-50%); color: var(--accent2); }
+    .tol-3 { right: -52px; top: 50%; transform: translateY(-50%); color: var(--accent); }
+
+    @keyframes rotateCw  { to { transform: rotate(360deg); } }
+    @keyframes rotateCcw { to { transform: rotate(-360deg); } }
+    @keyframes pulse {
+      0%,100% { box-shadow: 0 0 40px var(--primary-glow), 0 0 80px rgba(0,102,255,0.3); transform: scale(1); }
+      50% { box-shadow: 0 0 60px var(--primary-glow), 0 0 100px rgba(0,102,255,0.5); transform: scale(1.07); }
+    }
+
+    /* ============================================================
+       TESTIMONIALS
+    ============================================================ */
+    #testimonials { background: var(--bg-surface); }
+
+    .testimonials-header { text-align: center; margin-bottom: 64px; }
+    .testimonials-header .section-label { justify-content: center; }
+    .testimonials-header .section-sub { margin: 0 auto; text-align: center; }
+
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 28px;
+    }
+
+    .testimonial-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 36px 32px;
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition);
+    }
+    .testimonial-card::before {
+      content: '"';
+      position: absolute;
+      top: 20px; right: 28px;
+      font-family: var(--font-display);
+      font-size: 80px;
+      color: rgba(0,200,255,0.08);
+      line-height: 1;
+    }
+    .testimonial-card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 0 30px rgba(0,200,255,0.1);
+    }
+
+    .stars {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 20px;
+    }
+    .star { color: var(--primary); font-size: 14px; }
+
+    .testimonial-text {
+      font-size: 15px;
+      color: var(--text-body);
+      line-height: 1.8;
+      margin-bottom: 28px;
+      font-style: italic;
+    }
+
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .author-avatar {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--primary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--bg-void);
+    }
+    .author-name {
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+    .author-role {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--primary);
+      letter-spacing: 1px;
+    }
+
+    /* ============================================================
+       CONTACT SECTION
+    ============================================================ */
+    #contact { background: var(--bg-void); }
+
+    .contact-layout {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 80px;
+      align-items: start;
+    }
+
+    .contact-info { }
+    .contact-info .section-sub { margin-bottom: 40px; }
+
+    .contact-detail {
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .contact-detail-icon {
+      width: 44px; height: 44px;
+      border-radius: var(--radius-sm);
+      background: var(--primary-dim);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .contact-detail-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .contact-detail-val {
+      font-size: 15px;
+      color: var(--white);
+      font-weight: 500;
+    }
+
+    .contact-social {
+      display: flex;
+      gap: 12px;
+      margin-top: 40px;
+    }
+    .social-btn {
+      width: 40px; height: 40px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      cursor: pointer;
+      transition: var(--transition);
+      background: transparent;
+      color: var(--text-body);
+      text-decoration: none;
+    }
+    .social-btn:hover {
+      border-color: var(--primary);
+      background: var(--primary-dim);
+      color: var(--primary);
+      box-shadow: 0 0 14px rgba(0,200,255,0.2);
+    }
+
+    /* Contact Form */
+    .contact-form {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 44px;
+      position: relative;
+      overflow: hidden;
+    }
+    .contact-form::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--primary), transparent);
+    }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+    .form-group {
+      margin-bottom: 24px;
+      position: relative;
+    }
+    .form-label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: var(--primary);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .form-input, .form-textarea, .form-select {
+      width: 100%;
+      padding: 14px 18px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--white);
+      font-family: var(--font-body);
+      font-size: 14px;
+      outline: none;
+      transition: var(--transition);
+      -webkit-appearance: none;
+    }
+    .form-input:focus, .form-textarea:focus, .form-select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-dim);
+      background: var(--bg-card);
+    }
+    .form-input::placeholder, .form-textarea::placeholder { color: var(--muted); }
+    .form-textarea { resize: vertical; min-height: 130px; }
+    .form-select { cursor: pointer; }
+    .form-select option { background: var(--bg-deep); }
+
+    .form-submit {
+      width: 100%;
+      padding: 18px;
+      background: linear-gradient(135deg, var(--accent), var(--primary));
+      border: none;
+      border-radius: var(--radius-sm);
+      color: var(--bg-void);
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 30px rgba(0,102,255,0.3);
+    }
+    .form-submit::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, var(--primary), var(--accent2));
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .form-submit:hover { transform: translateY(-2px); box-shadow: 0 0 50px rgba(0,200,255,0.5); }
+    .form-submit:hover::before { opacity: 1; }
+    .form-submit span { position: relative; z-index: 1; }
+
+    /* Success message */
+    .form-success {
+      display: none;
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .form-success .success-icon {
+      font-size: 48px;
+      display: block;
+      margin-bottom: 16px;
+    }
+    .form-success h3 {
+      font-family: var(--font-display);
+      font-size: 20px;
+      color: var(--accent2);
+      margin-bottom: 8px;
+    }
+    .form-success p { color: var(--text-body); font-size: 14px; }
+
+    /* ============================================================
+       FLOATING PARTICLES BACKGROUND
+    ============================================================ */
+    .floating-particles {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      background: var(--primary);
+      opacity: 0.06;
+      animation: floatParticle linear infinite;
+    }
+
+    /* ============================================================
+       FOOTER
+    ============================================================ */
+    footer {
+      background: var(--bg-deep);
+      border-top: 1px solid var(--border);
+      padding: 80px 5% 40px;
+    }
+
+    .footer-top {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 60px;
+      margin-bottom: 60px;
+    }
+
+    .footer-brand-desc {
+      font-size: 14px;
+      color: var(--text-body);
+      line-height: 1.8;
+      margin: 20px 0 28px;
+      max-width: 300px;
+    }
+
+    .footer-col-title {
+      font-family: var(--font-display);
+      font-size: 12px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--white);
+      margin-bottom: 20px;
+    }
+
+    .footer-links { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .footer-links a {
+      font-size: 14px;
+      color: var(--text-body);
+      text-decoration: none;
+      transition: color 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .footer-links a::before { content: '—'; font-size: 10px; color: var(--primary); opacity: 0; transition: opacity 0.2s; }
+    .footer-links a:hover { color: var(--primary); }
+    .footer-links a:hover::before { opacity: 1; }
+
+    .footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 36px;
+      border-top: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .footer-copy {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 1px;
+    }
+    .footer-copy span { color: var(--primary); }
+
+    .footer-legal {
+      display: flex;
+      gap: 28px;
+    }
+    .footer-legal a {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+      text-decoration: none;
+      letter-spacing: 1px;
+      transition: color 0.2s;
+    }
+    .footer-legal a:hover { color: var(--primary); }
+
+    /* ============================================================
+       SCROLL-TO-TOP
+    ============================================================ */
+    #scroll-top {
+      position: fixed;
+      bottom: 32px; right: 32px;
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 500;
+      transition: var(--transition);
+      opacity: 0;
+      transform: translateY(20px);
+      font-size: 20px;
+    }
+    #scroll-top.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    #scroll-top:hover {
+      border-color: var(--primary);
+      box-shadow: 0 0 20px var(--primary-glow);
+      color: var(--primary);
+    }
+
+    /* ============================================================
+       SECTION NAV DOTS
+    ============================================================ */
+    #section-dots {
+      position: fixed;
+      right: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 400;
+    }
+    .sdot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--muted);
+      cursor: pointer;
+      transition: all 0.3s;
+      position: relative;
+    }
+    .sdot:hover, .sdot.active {
+      background: var(--primary);
+      box-shadow: 0 0 8px var(--primary);
+      transform: scale(1.5);
+    }
+    .sdot-tooltip {
+      position: absolute;
+      right: calc(100% + 10px);
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 1px;
+      white-space: nowrap;
+      color: var(--primary);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .sdot:hover .sdot-tooltip { opacity: 1; }
+
+    /* ============================================================
+       NOISE GRAIN OVERLAY
+    ============================================================ */
+    .grain-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9997;
+      opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+      animation: grainShift 0.4s steps(1) infinite;
+    }
+    @keyframes grainShift {
+      0%  { background-position: 0 0; }
+      25% { background-position: 100px 0; }
+      50% { background-position: 50px 50px; }
+      75% { background-position: 0 100px; }
+    }
+
+    /* ============================================================
+       MOBILE MENU
+    ============================================================ */
+    @media (max-width: 900px) {
+      .nav-links, .nav-cta { display: none; }
+      .hamburger { display: flex; }
+      .mobile-menu {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 999;
+        background: rgba(3,6,15,0.97);
+        backdrop-filter: blur(20px);
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 40px;
+      }
+      .mobile-menu.open { display: flex; }
+      .mobile-menu a {
+        font-family: var(--font-display);
+        font-size: 24px;
+        font-weight: 700;
+        color: var(--white);
+        text-decoration: none;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        transition: color 0.2s;
+      }
+      .mobile-menu a:hover { color: var(--primary); }
+      .mobile-menu-close {
+        position: absolute;
+        top: 24px; right: 24px;
+        font-size: 28px;
+        cursor: pointer;
+        color: var(--text-body);
+        background: none;
+        border: none;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .industries-layout { grid-template-columns: 1fr; }
+      .tech-layout { grid-template-columns: 1fr; }
+      .tech-visual { display: none; }
+      .contact-layout { grid-template-columns: 1fr; }
+      .footer-top { grid-template-columns: 1fr 1fr; gap: 40px; }
+      .form-row { grid-template-columns: 1fr; }
+      #section-dots { display: none; }
+    }
+
+    @media (max-width: 600px) {
+      section { padding: 70px 5%; }
+      .hero-stats { gap: 24px; }
+      .hero-stat-divider { display: none; }
+      .footer-top { grid-template-columns: 1fr; }
+      .industry-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ===== GRAIN OVERLAY ===== -->
+<div class="grain-overlay"></div>
+
+<!-- ===== CUSTOM CURSOR ===== -->
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+
+<!-- ===== PROGRESS BAR ===== -->
+<div id="progress-bar"></div>
+
+<!-- ===== SECTION DOTS ===== -->
+<div id="section-dots">
+  <div class="sdot active" data-section="hero"><span class="sdot-tooltip">Home</span></div>
+  <div class="sdot" data-section="products"><span class="sdot-tooltip">Products</span></div>
+  <div class="sdot" data-section="industries"><span class="sdot-tooltip">Industries</span></div>
+  <div class="sdot" data-section="why"><span class="sdot-tooltip">Why Us</span></div>
+  <div class="sdot" data-section="services"><span class="sdot-tooltip">Services</span></div>
+  <div class="sdot" data-section="technology"><span class="sdot-tooltip">Technology</span></div>
+  <div class="sdot" data-section="testimonials"><span class="sdot-tooltip">Reviews</span></div>
+  <div class="sdot" data-section="contact"><span class="sdot-tooltip">Contact</span></div>
+</div>
+
+<!-- ===== SCROLL TO TOP ===== -->
+<div id="scroll-top">↑</div>
+
+<!-- ============================================================
+     NAVIGATION
+============================================================ -->
+<nav id="navbar">
+  <a href="#hero" class="nav-logo">
+    <div class="nav-logo-icon">A</div>
+    <div class="nav-logo-text">
+      AMPHOSIS
+      <span>INK SOLUTIONS</span>
+    </div>
+  </a>
+
+  <ul class="nav-links">
+    <li><a href="#products">Products</a></li>
+    <li><a href="#industries">Industries</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#technology">Technology</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+
+  <a href="#contact" class="nav-cta">Get a Quote</a>
+
+  <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- Mobile Menu -->
+<div class="mobile-menu" id="mobile-menu">
+  <button class="mobile-menu-close" onclick="toggleMenu()">✕</button>
+  <a href="#products" onclick="toggleMenu()">Products</a>
+  <a href="#industries" onclick="toggleMenu()">Industries</a>
+  <a href="#services" onclick="toggleMenu()">Services</a>
+  <a href="#technology" onclick="toggleMenu()">Technology</a>
+  <a href="#contact" onclick="toggleMenu()">Contact</a>
+  <a href="#contact" class="nav-cta" onclick="toggleMenu()">Get a Quote</a>
+</div>
+
+<!-- ============================================================
+     HERO SECTION
+============================================================ -->
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-grid-overlay"></div>
+  <div class="hero-radial"></div>
+
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="hero-badge-dot"></span>
+      Certified CIJ Solutions Provider
+    </div>
+
+    <h1 class="hero-title">
+      <span class="line1">Precision CIJ Ink &amp;</span>
+      <span class="line2">Coding Solutions</span>
+    </h1>
+
+    <p class="hero-sub">
+      High-performance inkjet systems, premium consumables, and end-to-end
+      support for demanding industrial applications. Where precision meets reliability.
+    </p>
+
+    <div class="hero-buttons">
+      <a href="#products" class="btn-primary">
+        <span>Explore Products</span>
+        <span class="arrow">→</span>
+      </a>
+      <a href="#contact" class="btn-secondary">
+        <span>Request a Quote</span>
+        <span>↗</span>
+      </a>
+    </div>
+
+    <div class="hero-stats">
+      <div class="hero-stat-item">
+        <span class="hero-stat-num" data-count="500">0</span>
+        <span class="hero-stat-label">Clients Served</span>
+      </div>
+      <div class="hero-stat-divider"></div>
+      <div class="hero-stat-item">
+        <span class="hero-stat-num" data-count="99">0</span>
+        <span class="hero-stat-label">Uptime Rate %</span>
+      </div>
+      <div class="hero-stat-divider"></div>
+      <div class="hero-stat-item">
+        <span class="hero-stat-num" data-count="15">0</span>
+        <span class="hero-stat-label">Years Experience</span>
+      </div>
+      <div class="hero-stat-divider"></div>
+      <div class="hero-stat-item">
+        <span class="hero-stat-num" data-count="48">0</span>
+        <span class="hero-stat-label">Hr Support</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Card Visual -->
+  <div class="hero-visual">
+    <div class="hero-visual-card">
+      <div class="hvc-label">◈ System Status</div>
+      <div class="hvc-title">CIJ Print Monitor</div>
+      <div class="hvc-sub">Real-time performance analytics</div>
+
+      <div class="hvc-bar-wrap">
+        <div class="hvc-bar-label"><span>Ink Viscosity</span><span>98%</span></div>
+        <div class="hvc-bar"><div class="hvc-bar-fill" style="width:98%"></div></div>
+      </div>
+      <div class="hvc-bar-wrap">
+        <div class="hvc-bar-label"><span>Print Accuracy</span><span>99.7%</span></div>
+        <div class="hvc-bar"><div class="hvc-bar-fill" style="width:99.7%"></div></div>
+      </div>
+      <div class="hvc-bar-wrap">
+        <div class="hvc-bar-label"><span>System Uptime</span><span>100%</span></div>
+        <div class="hvc-bar"><div class="hvc-bar-fill" style="width:100%"></div></div>
+      </div>
+
+      <div class="hvc-badge-row">
+        <span class="hvc-badge">ISO 9001</span>
+        <span class="hvc-badge">RoHS</span>
+        <span class="hvc-badge">FDA GRADE</span>
+        <span class="hvc-badge">ONLINE</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TICKER
+============================================================ -->
+<div class="ticker-wrap">
+  <div class="ticker-inner" id="ticker">
+    <span class="ticker-item"><span class="dot"></span>CIJ Inks &amp; Fluids</span>
+    <span class="ticker-item"><span class="dot"></span>Industrial Printers</span>
+    <span class="ticker-item"><span class="dot"></span>Spare Parts Supply</span>
+    <span class="ticker-item"><span class="dot"></span>Make-up Fluids</span>
+    <span class="ticker-item"><span class="dot"></span>On-site Maintenance</span>
+    <span class="ticker-item"><span class="dot"></span>24/7 Technical Support</span>
+    <span class="ticker-item"><span class="dot"></span>Pharma Grade Inks</span>
+    <span class="ticker-item"><span class="dot"></span>Food &amp; Beverage Coding</span>
+    <span class="ticker-item"><span class="dot"></span>CIJ Inks &amp; Fluids</span>
+    <span class="ticker-item"><span class="dot"></span>Industrial Printers</span>
+    <span class="ticker-item"><span class="dot"></span>Spare Parts Supply</span>
+    <span class="ticker-item"><span class="dot"></span>Make-up Fluids</span>
+    <span class="ticker-item"><span class="dot"></span>On-site Maintenance</span>
+    <span class="ticker-item"><span class="dot"></span>24/7 Technical Support</span>
+    <span class="ticker-item"><span class="dot"></span>Pharma Grade Inks</span>
+    <span class="ticker-item"><span class="dot"></span>Food &amp; Beverage Coding</span>
+  </div>
+</div>
+
+<!-- ============================================================
+     PRODUCTS SECTION
+============================================================ -->
+<section id="products">
+  <div class="floating-particles" id="products-particles"></div>
+
+  <div class="reveal">
+    <div class="section-label">Our Offerings</div>
+    <h2 class="section-title">Industry-Leading <span class="accent">Products</span></h2>
+    <p class="section-sub">
+      From high-performance CIJ inks to complete industrial printing systems,
+      we supply everything your production line needs for flawless coding &amp; marking.
+    </p>
+  </div>
+
+  <div class="products-grid">
+    <div class="product-card reveal reveal-delay-1">
+      <div class="product-icon">🖋️</div>
+      <div class="product-tag">01 / Consumables</div>
+      <div class="product-name">CIJ Inks</div>
+      <div class="product-desc">
+        Premium continuous inkjet inks engineered for maximum adhesion,
+        fast drying, and consistency across all substrates — porous or non-porous.
+      </div>
+      <div class="product-specs">
+        <span class="product-spec">Water-Based</span>
+        <span class="product-spec">Solvent-Based</span>
+        <span class="product-spec">MEK-Free</span>
+        <span class="product-spec">UV-Resistant</span>
+      </div>
+      <a href="#contact" class="product-link">Learn More <span class="arrow">→</span></a>
+    </div>
+
+    <div class="product-card reveal reveal-delay-2">
+      <div class="product-icon">🧪</div>
+      <div class="product-tag">02 / Consumables</div>
+      <div class="product-name">Make-up Fluids</div>
+      <div class="product-desc">
+        Precision-formulated make-up solvents that maintain optimal ink viscosity
+        and keep your CIJ system running at peak performance.
+      </div>
+      <div class="product-specs">
+        <span class="product-spec">Acetone-Based</span>
+        <span class="product-spec">MEK-Based</span>
+        <span class="product-spec">Ethanol-Based</span>
+        <span class="product-spec">ISO Certified</span>
+      </div>
+      <a href="#contact" class="product-link">Learn More <span class="arrow">→</span></a>
+    </div>
+
+    <div class="product-card reveal reveal-delay-3">
+      <div class="product-icon">🖨️</div>
+      <div class="product-tag">03 / Hardware</div>
+      <div class="product-name">Industrial Printers</div>
+      <div class="product-desc">
+        High-speed CIJ coding systems capable of printing on virtually any surface —
+        from glass and metal to flexible films and cardboard packaging.
+      </div>
+      <div class="product-specs">
+        <span class="product-spec">High-Speed</span>
+        <span class="product-spec">Multi-Line</span>
+        <span class="product-spec">IP55 Rated</span>
+        <span class="product-spec">Easy Clean</span>
+      </div>
+      <a href="#contact" class="product-link">Learn More <span class="arrow">→</span></a>
+    </div>
+
+    <div class="product-card reveal reveal-delay-4">
+      <div class="product-icon">⚙️</div>
+      <div class="product-tag">04 / Parts</div>
+      <div class="product-name">Spare Parts &amp; Kits</div>
+      <div class="product-desc">
+        OEM-equivalent replacement parts and maintenance kits to minimize
+        downtime and extend the lifespan of your coding equipment.
+      </div>
+      <div class="product-specs">
+        <span class="product-spec">Printhead Kits</span>
+        <span class="product-spec">Nozzles</span>
+        <span class="product-spec">Filters</span>
+        <span class="product-spec">Pump Kits</span>
+      </div>
+      <a href="#contact" class="product-link">Learn More <span class="arrow">→</span></a>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     INDUSTRIES SECTION
+============================================================ -->
+<section id="industries">
+  <div class="industries-layout">
+    <div class="industries-text reveal">
+      <div class="section-label">Applications</div>
+      <h2 class="section-title">Built for Every <span class="accent">Industry</span></h2>
+      <p class="section-sub">
+        Our coding &amp; marking solutions serve the most demanding sectors worldwide —
+        delivering compliance, traceability, and performance you can rely on.
+      </p>
+      <div class="feat-list">
+        <div class="feat-item">
+          <div class="feat-icon">✓</div>
+          <span>GS1-compliant batch and date coding</span>
+        </div>
+        <div class="feat-item">
+          <div class="feat-icon">✓</div>
+          <span>Pharma serialization &amp; anti-counterfeit inks</span>
+        </div>
+        <div class="feat-item">
+          <div class="feat-icon">✓</div>
+          <span>High-contrast inks for dark &amp; clear substrates</span>
+        </div>
+        <div class="feat-item">
+          <div class="feat-icon">✓</div>
+          <span>Fully integrated line &amp; conveyor compatibility</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="industry-grid">
+      <div class="industry-item reveal reveal-delay-1">
+        <div class="industry-icon-wrap"><span>🥤</span></div>
+        <div class="industry-info">
+          <h4>Food &amp; Beverage</h4>
+          <p>FDA-compliant inks for packaging lines</p>
+        </div>
+      </div>
+      <div class="industry-item reveal reveal-delay-2">
+        <div class="industry-icon-wrap"><span>💊</span></div>
+        <div class="industry-info">
+          <h4>Pharmaceuticals</h4>
+          <p>Serialization &amp; tamper-evident coding</p>
+        </div>
+      </div>
+      <div class="industry-item reveal reveal-delay-3">
+        <div class="industry-icon-wrap"><span>📦</span></div>
+        <div class="industry-info">
+          <h4>Packaging</h4>
+          <p>High-speed carton &amp; film marking</p>
+        </div>
+      </div>
+      <div class="industry-item reveal reveal-delay-4">
+        <div class="industry-icon-wrap"><span>🚗</span></div>
+        <div class="industry-info">
+          <h4>Automotive</h4>
+          <p>Part traceability on metal &amp; plastic</p>
+        </div>
+      </div>
+      <div class="industry-item reveal reveal-delay-3">
+        <div class="industry-icon-wrap"><span>🔌</span></div>
+        <div class="industry-info">
+          <h4>Electronics</h4>
+          <p>PCB &amp; component identification</p>
+        </div>
+      </div>
+      <div class="industry-item reveal reveal-delay-4">
+        <div class="industry-icon-wrap"><span>🛢️</span></div>
+        <div class="industry-info">
+          <h4>Chemicals</h4>
+          <p>Hazardous material &amp; compliance labels</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     WHY CHOOSE US
+============================================================ -->
+<section id="why">
+  <div class="why-header reveal">
+    <div class="section-label">Our Advantage</div>
+    <h2 class="section-title">Why Partner With <span class="accent">Amphosis?</span></h2>
+    <p class="section-sub">
+      We combine advanced ink chemistry with deep application expertise —
+      giving you a strategic partner, not just a supplier.
+    </p>
+  </div>
+
+  <div class="why-grid">
+    <div class="why-card reveal reveal-delay-1">
+      <span class="why-num">01</span>
+      <span class="why-icon">🔬</span>
+      <div class="why-title">Premium Formulations</div>
+      <p class="why-desc">
+        Every ink is precision-engineered for exceptional adhesion, UV resistance,
+        and compatibility across all major CIJ platforms.
+      </p>
+    </div>
+    <div class="why-card reveal reveal-delay-2">
+      <span class="why-num">02</span>
+      <span class="why-icon">⚡</span>
+      <div class="why-title">Reliable Performance</div>
+      <p class="why-desc">
+        Zero-clog formulas and field-tested viscosity profiles ensure
+        consistent output shift after shift, year after year.
+      </p>
+    </div>
+    <div class="why-card reveal reveal-delay-3">
+      <span class="why-num">03</span>
+      <span class="why-icon">💰</span>
+      <div class="why-title">Cost-Effective Solutions</div>
+      <p class="why-desc">
+        Our inks deliver up to 30% more printed characters per liter — maximizing
+        your ROI without compromising on quality.
+      </p>
+    </div>
+    <div class="why-card reveal reveal-delay-4">
+      <span class="why-num">04</span>
+      <span class="why-icon">🛡️</span>
+      <div class="why-title">Expert Technical Support</div>
+      <p class="why-desc">
+        Dedicated field engineers and remote diagnostics keep your lines moving —
+        with response times under 4 hours.
+      </p>
+    </div>
+    <div class="why-card reveal reveal-delay-5">
+      <span class="why-num">05</span>
+      <span class="why-icon">🌍</span>
+      <div class="why-title">Global Supply Chain</div>
+      <p class="why-desc">
+        Strategically positioned distribution ensures next-day delivery for consumables
+        and critical spare parts, anywhere.
+      </p>
+    </div>
+    <div class="why-card reveal reveal-delay-4">
+      <span class="why-num">06</span>
+      <span class="why-icon">📋</span>
+      <div class="why-title">Full Compliance</div>
+      <p class="why-desc">
+        ISO 9001 certified processes and regulatory-compliant inks for FDA,
+        EU, and GHS standards across all product lines.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     SERVICES SECTION
+============================================================ -->
+<section id="services">
+  <div class="reveal">
+    <div class="section-label">What We Offer</div>
+    <h2 class="section-title">End-to-End <span class="accent">Services</span></h2>
+    <p class="section-sub">
+      From initial setup to ongoing maintenance, our team ensures your industrial
+      printing systems never miss a beat.
+    </p>
+  </div>
+
+  <div class="services-grid">
+    <div class="service-card reveal reveal-delay-1">
+      <div class="service-number">SVC 01</div>
+      <span class="service-icon">🔧</span>
+      <div class="service-title">Printer Maintenance</div>
+      <p class="service-desc">
+        Comprehensive preventive and corrective maintenance programs tailored
+        to your production schedule and equipment fleet.
+      </p>
+      <ul class="service-features">
+        <li>Scheduled PPM visits</li>
+        <li>Printhead cleaning &amp; calibration</li>
+        <li>Filter &amp; nozzle replacement</li>
+        <li>Ink system flushing &amp; testing</li>
+      </ul>
+    </div>
+
+    <div class="service-card reveal reveal-delay-2">
+      <div class="service-number">SVC 02</div>
+      <span class="service-icon">🖥️</span>
+      <div class="service-title">Technical Support</div>
+      <p class="service-desc">
+        Round-the-clock remote diagnostics and on-site response by certified
+        engineers who know CIJ systems inside out.
+      </p>
+      <ul class="service-features">
+        <li>24/7 helpdesk &amp; remote monitoring</li>
+        <li>On-site response within 4 hours</li>
+        <li>Software &amp; firmware updates</li>
+        <li>Dedicated account engineer</li>
+      </ul>
+    </div>
+
+    <div class="service-card reveal reveal-delay-3">
+      <div class="service-number">SVC 03</div>
+      <span class="service-icon">🚀</span>
+      <div class="service-title">Installation &amp; Setup</div>
+      <p class="service-desc">
+        Professional line integration from unboxing to first print — including
+        custom mounting, ink selection, and operator training.
+      </p>
+      <ul class="service-features">
+        <li>Full equipment installation</li>
+        <li>Line integration &amp; belt timing</li>
+        <li>Ink &amp; fluid configuration</li>
+        <li>Operator training certification</li>
+      </ul>
+    </div>
+
+    <div class="service-card reveal reveal-delay-4">
+      <div class="service-number">SVC 04</div>
+      <span class="service-icon">🔍</span>
+      <div class="service-title">Troubleshooting &amp; Audit</div>
+      <p class="service-desc">
+        Root-cause analysis, print quality audits, and ink compatibility testing
+        to eliminate recurring issues and improve output.
+      </p>
+      <ul class="service-features">
+        <li>Print quality assessment</li>
+        <li>Ink compatibility testing</li>
+        <li>Machine audit &amp; report</li>
+        <li>Upgrade &amp; replacement advisory</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TECHNOLOGY SECTION
+============================================================ -->
+<section id="technology">
+  <canvas id="tech-canvas"></canvas>
+
+  <div class="tech-layout">
+    <div class="reveal">
+      <div class="section-label">Innovation</div>
+      <h2 class="section-title">Advanced Ink <span class="accent">Technology</span></h2>
+      <p class="section-sub">
+        Our proprietary ink chemistry leverages nano-particle dispersion and
+        molecular adhesion science to deliver codes that last — across temperature
+        extremes, chemical exposure, and mechanical stress.
+      </p>
+
+      <div class="tech-metrics">
+        <div class="tech-metric reveal reveal-delay-1">
+          <div class="metric-val" data-count="99.97">0</div>
+          <div class="metric-label">Print Accuracy %</div>
+        </div>
+        <div class="tech-metric reveal reveal-delay-2">
+          <div class="metric-val" data-count="150000">0</div>
+          <div class="metric-label">Chars/Hr Throughput</div>
+        </div>
+        <div class="tech-metric reveal reveal-delay-3">
+          <div class="metric-val" data-count="30">0</div>
+          <div class="metric-label">% More Yield/Liter</div>
+        </div>
+        <div class="tech-metric reveal reveal-delay-4">
+          <div class="metric-val" data-count="4">0</div>
+          <div class="metric-label">Hr Max Response Time</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tech-visual reveal">
+      <div class="tech-circle tc-1">
+        <div class="tc-dot"></div>
+        <div class="tech-orbit-label tol-1">NANO DISPERSION</div>
+        <div class="tech-circle tc-2">
+          <div class="tc-dot"></div>
+          <div class="tech-orbit-label tol-2">VISCOSITY CONTROL</div>
+          <div class="tech-circle tc-3">
+            <div class="tc-dot"></div>
+            <div class="tech-orbit-label tol-3">pH BALANCE</div>
+            <div class="tc-core">⬡</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     TESTIMONIALS SECTION
+============================================================ -->
+<section id="testimonials">
+  <div class="testimonials-header reveal">
+    <div class="section-label">Client Voices</div>
+    <h2 class="section-title">Trusted by Industry <span class="accent">Leaders</span></h2>
+    <p class="section-sub">
+      From global manufacturers to regional producers, Amphosis delivers the
+      reliability and performance our clients depend on every day.
+    </p>
+  </div>
+
+  <div class="testimonials-grid">
+    <div class="testimonial-card reveal reveal-delay-1">
+      <div class="stars">
+        <span class="star">★</span><span class="star">★</span><span class="star">★</span>
+        <span class="star">★</span><span class="star">★</span>
+      </div>
+      <p class="testimonial-text">
+        "We switched to Amphosis CIJ inks two years ago and have seen zero
+        nozzle clogs since. The consistency across our three production lines
+        is remarkable — it's transformed our quality control process entirely."
+      </p>
+      <div class="testimonial-author">
+        <div class="author-avatar">MK</div>
+        <div>
+          <div class="author-name">Mohammed Al-Khalid</div>
+          <div class="author-role">Production Manager · Gulf Foods Co.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="testimonial-card reveal reveal-delay-2">
+      <div class="stars">
+        <span class="star">★</span><span class="star">★</span><span class="star">★</span>
+        <span class="star">★</span><span class="star">★</span>
+      </div>
+      <p class="testimonial-text">
+        "The technical support from Amphosis is second to none. When we had
+        an urgent batch coding issue on a Friday night, their engineer was
+        on-site within 3 hours. That kind of commitment is rare in this industry."
+      </p>
+      <div class="testimonial-author">
+        <div class="author-avatar">SR</div>
+        <div>
+          <div class="author-name">Sarah Reynolds</div>
+          <div class="author-role">Operations Director · PharmaTrack Ltd.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="testimonial-card reveal reveal-delay-3">
+      <div class="stars">
+        <span class="star">★</span><span class="star">★</span><span class="star">★</span>
+        <span class="star">★</span><span class="star">★</span>
+      </div>
+      <p class="testimonial-text">
+        "Cost savings of over 25% on consumables without any quality trade-off.
+        Amphosis make-up fluids extended our print intervals significantly and
+        their pricing transparency is something I wish all suppliers offered."
+      </p>
+      <div class="testimonial-author">
+        <div class="author-avatar">JW</div>
+        <div>
+          <div class="author-name">James Whitmore</div>
+          <div class="author-role">Plant Engineer · AutoPack Industries</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     CONTACT SECTION
+============================================================ -->
+<section id="contact">
+  <div class="floating-particles" id="contact-particles"></div>
+
+  <div class="contact-layout">
+    <div class="contact-info reveal">
+      <div class="section-label">Get In Touch</div>
+      <h2 class="section-title">Let's Build <span class="accent">Together</span></h2>
+      <p class="section-sub">
+        Tell us about your production environment and we'll design a
+        complete ink &amp; coding solution around your needs.
+      </p>
+
+      <div class="contact-detail">
+        <div class="contact-detail-icon">📞</div>
+        <div>
+          <div class="contact-detail-label">Phone</div>
+          <div class="contact-detail-val">+971 4 000 0000</div>
+        </div>
+      </div>
+
+      <div class="contact-detail">
+        <div class="contact-detail-icon">✉️</div>
+        <div>
+          <div class="contact-detail-label">Email</div>
+          <div class="contact-detail-val">sales@amphosis.com</div>
+        </div>
+      </div>
+
+      <div class="contact-detail">
+        <div class="contact-detail-icon">📍</div>
+        <div>
+          <div class="contact-detail-label">Headquarters</div>
+          <div class="contact-detail-val">Dubai Industrial City, UAE</div>
+        </div>
+      </div>
+
+      <div class="contact-detail">
+        <div class="contact-detail-icon">🕐</div>
+        <div>
+          <div class="contact-detail-label">Support Hours</div>
+          <div class="contact-detail-val">24/7 Technical Helpdesk</div>
+        </div>
+      </div>
+
+      <div class="contact-social">
+        <a href="#" class="social-btn">in</a>
+        <a href="#" class="social-btn">𝕏</a>
+        <a href="#" class="social-btn">▶</a>
+        <a href="#" class="social-btn">✉</a>
+      </div>
+    </div>
+
+    <div class="reveal reveal-delay-2">
+      <div class="contact-form" id="contact-form-wrap">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" class="form-input" placeholder="John Smith" id="f-name">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" class="form-input" placeholder="john@company.com" id="f-email">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Company</label>
+            <input type="text" class="form-input" placeholder="Your Company Ltd." id="f-company">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Interest</label>
+            <select class="form-select" id="f-interest">
+              <option value="">Select a product...</option>
+              <option>CIJ Inks</option>
+              <option>Make-up Fluids</option>
+              <option>Industrial Printers</option>
+              <option>Spare Parts</option>
+              <option>Maintenance Service</option>
+              <option>Full Solution Package</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Message</label>
+          <textarea class="form-textarea" placeholder="Tell us about your application, production volumes, and any specific requirements..." id="f-message"></textarea>
+        </div>
+
+        <button class="form-submit" onclick="submitForm()">
+          <span>Send Message → Get Your Quote</span>
+        </button>
+
+        <div class="form-success" id="form-success">
+          <span class="success-icon">✅</span>
+          <h3>Message Received!</h3>
+          <p>Our technical team will reach out within 24 hours with a tailored proposal for your application.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FOOTER
+============================================================ -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <a href="#hero" class="nav-logo" style="margin-bottom:16px; display:inline-flex;">
+        <div class="nav-logo-icon">A</div>
+        <div class="nav-logo-text">
+          AMPHOSIS
+          <span>INK SOLUTIONS</span>
+        </div>
+      </a>
+      <p class="footer-brand-desc">
+        Precision CIJ inks, make-up fluids, industrial printers, and expert maintenance
+        services for manufacturers who demand zero-downtime performance.
+      </p>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <span class="hvc-badge">ISO 9001:2015</span>
+        <span class="hvc-badge">RoHS Compliant</span>
+        <span class="hvc-badge">FDA Grade</span>
+      </div>
+    </div>
+
+    <div>
+      <div class="footer-col-title">Products</div>
+      <ul class="footer-links">
+        <li><a href="#products">CIJ Inks</a></li>
+        <li><a href="#products">Make-up Fluids</a></li>
+        <li><a href="#products">Industrial Printers</a></li>
+        <li><a href="#products">Spare Parts</a></li>
+        <li><a href="#products">Cleaning Solutions</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <div class="footer-col-title">Services</div>
+      <ul class="footer-links">
+        <li><a href="#services">Printer Maintenance</a></li>
+        <li><a href="#services">Technical Support</a></li>
+        <li><a href="#services">Installation</a></li>
+        <li><a href="#services">Troubleshooting</a></li>
+        <li><a href="#services">Training</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <div class="footer-col-title">Company</div>
+      <ul class="footer-links">
+        <li><a href="#why">About Us</a></li>
+        <li><a href="#industries">Industries</a></li>
+        <li><a href="#technology">Technology</a></li>
+        <li><a href="#testimonials">Case Studies</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <div class="footer-copy">
+      © 2025 <span>Amphosis Ink Solutions</span>. All rights reserved.
+    </div>
+    <div class="footer-legal">
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Certifications</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================================================
+     JAVASCRIPT
+============================================================ -->
+<script>
+/* ============================================================
+   CUSTOM CURSOR
+============================================================ */
+const dot  = document.getElementById('cursor-dot');
+const ring = document.getElementById('cursor-ring');
+let mx = -100, my = -100, rx = -100, ry = -100;
+
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+
+function animateCursor() {
+  dot.style.left  = mx + 'px';
+  dot.style.top   = my + 'px';
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  ring.style.left = rx + 'px';
+  ring.style.top  = ry + 'px';
+  requestAnimationFrame(animateCursor);
+}
+animateCursor();
+
+document.querySelectorAll('a, button, .product-card, .why-card, .service-card, .testimonial-card, .industry-item, .sdot').forEach(el => {
+  el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+  el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+});
+
+/* ============================================================
+   PROGRESS BAR
+============================================================ */
+const progressBar = document.getElementById('progress-bar');
+window.addEventListener('scroll', () => {
+  const pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+  progressBar.style.width = pct + '%';
+});
+
+/* ============================================================
+   NAVBAR SCROLL
+============================================================ */
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 60);
+});
+
+/* ============================================================
+   SCROLL TO TOP
+============================================================ */
+const scrollTopBtn = document.getElementById('scroll-top');
+window.addEventListener('scroll', () => {
+  scrollTopBtn.classList.toggle('visible', window.scrollY > 400);
+});
+scrollTopBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+/* ============================================================
+   MOBILE MENU
+============================================================ */
+function toggleMenu() {
+  document.getElementById('mobile-menu').classList.toggle('open');
+}
+
+/* ============================================================
+   SECTION DOTS
+============================================================ */
+const sectionIds = ['hero','products','industries','why','services','technology','testimonials','contact'];
+const dots = document.querySelectorAll('.sdot');
+
+dots.forEach((dot, i) => {
+  dot.addEventListener('click', () => {
+    document.getElementById(sectionIds[i]).scrollIntoView({ behavior: 'smooth' });
+  });
+});
+
+window.addEventListener('scroll', () => {
+  let current = '';
+  sectionIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && window.scrollY >= el.offsetTop - 200) current = id;
+  });
+  dots.forEach((d, i) => {
+    d.classList.toggle('active', sectionIds[i] === current);
+  });
+});
+
+/* ============================================================
+   SCROLL REVEAL (IntersectionObserver)
+============================================================ */
+const revealEls = document.querySelectorAll('.reveal');
+const revealObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+}, { threshold: 0.12 });
+
+revealEls.forEach(el => revealObs.observe(el));
+
+/* ============================================================
+   ANIMATED COUNTERS
+============================================================ */
+function animateCount(el) {
+  const target = parseFloat(el.dataset.count);
+  const isDecimal = target % 1 !== 0;
+  const isLarge = target > 1000;
+  const duration = 1800;
+  const start = performance.now();
+
+  function step(now) {
+    const progress = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    let val = target * eased;
+    if (isDecimal) {
+      el.textContent = val.toFixed(2);
+    } else if (isLarge) {
+      el.textContent = Math.floor(val).toLocaleString();
+    } else {
+      el.textContent = Math.floor(val);
+    }
+    if (progress < 1) requestAnimationFrame(step);
+    else el.textContent = isDecimal ? target.toFixed(2) : (isLarge ? target.toLocaleString() : target);
+  }
+  requestAnimationFrame(step);
+}
+
+const countObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting && !e.target.dataset.counted) {
+      e.target.dataset.counted = '1';
+      animateCount(e.target);
+    }
+  });
+}, { threshold: 0.5 });
+
+document.querySelectorAll('[data-count]').forEach(el => countObs.observe(el));
+
+/* ============================================================
+   HERO CANVAS — INK PARTICLE FLOW
+============================================================ */
+(function() {
+  const canvas = document.getElementById('hero-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [];
+
+  function resize() {
+    W = canvas.width  = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  class Particle {
+    constructor() { this.reset(); }
+    reset() {
+      this.x = Math.random() * W;
+      this.y = Math.random() * H;
+      this.r = Math.random() * 2.5 + 0.3;
+      this.vx = (Math.random() - 0.5) * 0.5;
+      this.vy = Math.random() * 0.6 + 0.15;
+      this.alpha = Math.random() * 0.5 + 0.1;
+      this.color = Math.random() > 0.6
+        ? `rgba(0,200,255,${this.alpha})`
+        : Math.random() > 0.5
+        ? `rgba(0,102,255,${this.alpha})`
+        : `rgba(0,255,204,${this.alpha * 0.6})`;
+    }
+    update() {
+      this.x += this.vx;
+      this.y += this.vy;
+      if (this.y > H + 10 || this.x < -10 || this.x > W + 10) this.reset();
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+      ctx.fillStyle = this.color;
+      ctx.fill();
+    }
+  }
+
+  for (let i = 0; i < 130; i++) particles.push(new Particle());
+
+  // Ink flow lines
+  class InkLine {
+    constructor() { this.reset(); }
+    reset() {
+      this.x = Math.random() * W;
+      this.y = -20;
+      this.segments = [];
+      this.len = Math.floor(Math.random() * 40 + 20);
+      this.speed = Math.random() * 0.8 + 0.3;
+      this.alpha = Math.random() * 0.12 + 0.04;
+      this.hue = Math.random() > 0.5 ? 195 : 220;
+    }
+    update() {
+      this.segments.unshift({ x: this.x + Math.sin(this.y * 0.02) * 12, y: this.y });
+      if (this.segments.length > this.len) this.segments.pop();
+      this.y += this.speed;
+      if (this.y > H + 50) this.reset();
+    }
+    draw() {
+      if (this.segments.length < 2) return;
+      ctx.beginPath();
+      ctx.moveTo(this.segments[0].x, this.segments[0].y);
+      for (let i = 1; i < this.segments.length; i++) {
+        const a = this.alpha * (1 - i / this.segments.length);
+        ctx.lineTo(this.segments[i].x, this.segments[i].y);
+      }
+      ctx.strokeStyle = `hsla(${this.hue},100%,60%,${this.alpha})`;
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
+    }
+  }
+
+  const inkLines = [];
+  for (let i = 0; i < 18; i++) {
+    const l = new InkLine();
+    l.y = Math.random() * H;
+    inkLines.push(l);
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, W, H);
+    inkLines.forEach(l => { l.update(); l.draw(); });
+    particles.forEach(p => { p.update(); p.draw(); });
+
+    // Connection lines between close particles
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 80) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(0,200,255,${0.06 * (1 - dist / 80)})`;
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+        }
+      }
+    }
+
+    requestAnimationFrame(animate);
+  }
+  animate();
+})();
+
+/* ============================================================
+   TECH CANVAS — WAVEFORM
+============================================================ */
+(function() {
+  const canvas = document.getElementById('tech-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let W, H, t = 0;
+
+  function resize() {
+    W = canvas.width  = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  function drawWave(yBase, amp, freq, speed, alpha, color) {
+    ctx.beginPath();
+    for (let x = 0; x <= W; x += 2) {
+      const y = yBase + Math.sin(x * freq + t * speed) * amp
+                      + Math.sin(x * freq * 0.5 + t * speed * 0.7) * amp * 0.4;
+      x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1.2;
+    ctx.globalAlpha = alpha;
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, W, H);
+    t += 0.015;
+    drawWave(H * 0.3, 30, 0.012, 1.0, 0.4, 'rgba(0,200,255,1)');
+    drawWave(H * 0.5, 20, 0.018, 0.8, 0.25, 'rgba(0,102,255,1)');
+    drawWave(H * 0.7, 25, 0.010, 1.2, 0.3, 'rgba(0,255,204,1)');
+    requestAnimationFrame(animate);
+  }
+  animate();
+})();
+
+/* ============================================================
+   FLOATING PARTICLES (background sections)
+============================================================ */
+function createParticles(containerId, count) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('div');
+    p.classList.add('particle');
+    const size = Math.random() * 60 + 10;
+    p.style.cssText = `
+      width: ${size}px; height: ${size}px;
+      left: ${Math.random() * 100}%;
+      bottom: ${Math.random() * 100}%;
+      animation-duration: ${Math.random() * 20 + 15}s;
+      animation-delay: ${Math.random() * -20}s;
+      opacity: ${Math.random() * 0.04 + 0.01};
+    `;
+    container.appendChild(p);
+  }
+}
+createParticles('products-particles', 8);
+createParticles('contact-particles', 8);
+
+/* ============================================================
+   FORM SUBMIT
+============================================================ */
+function submitForm() {
+  const name    = document.getElementById('f-name').value.trim();
+  const email   = document.getElementById('f-email').value.trim();
+  const company = document.getElementById('f-company').value.trim();
+  const message = document.getElementById('f-message').value.trim();
+
+  if (!name || !email) {
+    alert('Please fill in your name and email address.');
+    return;
+  }
+
+  const btn = document.querySelector('.form-submit');
+  btn.innerHTML = '<span>Sending...</span>';
+  btn.style.pointerEvents = 'none';
+
+  setTimeout(() => {
+    document.querySelector('.contact-form').querySelectorAll('.form-group, .form-row, .form-submit').forEach(el => {
+      el.style.display = 'none';
+    });
+    document.getElementById('form-success').style.display = 'block';
+  }, 1200);
+}
+
+/* ============================================================
+   SMOOTH NAV LINKS
+============================================================ */
+document.querySelectorAll('a[href^="#"]').forEach(link => {
+  link.addEventListener('click', e => {
+    const target = document.querySelector(link.getAttribute('href'));
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
+</body>
+</html>
